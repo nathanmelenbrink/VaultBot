@@ -6,42 +6,24 @@ const int gripperPin = 18;
 const int gripOpen = 160; // degrees to make the gripper open
 const int gripClose = 30; // degrees to make the gripper close
 
-const int ARC_PUL = A0; // define Pulse pin
-const int ARC_DIR = A1; // define Direction pin
-//const int X0_ENA = ; // define Enable pin
-
-const int numSteppers = 3;
 const int SPEED = 400;
 const int ACCELERATION = 400;
 
 Servo gripper;
-
-//
-bool activated[numSteppers] = {false, false, false};
-int positions[numSteppers] = {0, 0, 0};
-
+bool COMMAND = false;
 String readString;
-
-AccelStepper ARC(AccelStepper::DRIVER, ARC_PUL, ARC_DIR);
 AccelStepper LOC(AccelStepper::FULL4WIRE, 13, 12, 27, 33);
 AccelStepper LIN(AccelStepper::FULL4WIRE, 15, 32, 14, 22);
 
-AccelStepper* steppers[numSteppers] = {
-  &ARC, &LOC, &LIN
-};
-
-int pos = 0;    // variable to store the servo position
-
+int pos = 0;
 
 void setup() {
   // set all motor control pins to output
-  pinMode (ARC_PUL, OUTPUT);
-  pinMode (ARC_PUL, OUTPUT);
+  LOC.setMaxSpeed(SPEED);
+  LOC.setAcceleration(ACCELERATION);
+  LIN.setMaxSpeed(SPEED);
+  LIN.setAcceleration(ACCELERATION);
 
-  for (int i = 0; i < numSteppers; i++) {
-    steppers[i]->setMaxSpeed(SPEED);
-    steppers[i]->setAcceleration(ACCELERATION);
-  }
   Serial.begin(9600);
 
   // Allow allocation of all timers
@@ -55,87 +37,31 @@ void setup() {
 
 void loop() {
 
-  while (Serial.available()) {
-    delay(3);
-    char c = Serial.read();
-    readString += c;
-  }
-  readString.trim();
-  if (readString.length() > 0) {
+  // COMMAND Mode
+  if (!COMMAND) {
 
-    if (readString == "ARC" || readString == "arc") {
-      Serial.println("Arch Elevator ACTIVE");
-      deactivate();
-      activated[0] = true;
-    }
+    // AUTONOMOUS Mode
 
-    if (readString == "LOC" || readString == "loc") {
-      Serial.println("Locomotion ACTIVE");
-      deactivate();
-      activated[1] = true;
-    }
-
-    if (readString == "LIN" || readString == "lin") {
-      Serial.println("Linear ACTIVE");
-      deactivate();
-      activated[2] = true;
-    }
-
-    if (readString == "G" || readString == "grip") {
-      Serial.println("Activated Grip");
-      deactivate();
-      // for (pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
-      gripper.write(pos);    // tell servo to go to position in variable 'pos'
-      //  delay(15);             // waits 15ms for the servo to reach the position
-      //}
-    }
-
-    if (readString == "R" || readString == "release") {
-      Serial.println("Activated Release");
-      deactivate();
-      //for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
-      gripper.write(pos);    // tell servo to go to position in variable 'pos'
-      // delay(15);             // waits 15ms for the servo to reach the position
-      //}
-    }
+    // ASSIGN MOTORS TO NEW POSITIONS
 
 
-    if (isValidNumber(readString)) {
-      Serial.println("valid number");
-      int val = readString.toInt();
-      Serial.println(val);
-      pos = val;
-      for (int i = 0; i < numSteppers; i++) {
-        if (activated[i]) {
-          positions[i] = val;
-        }
-      }
-    }
-    readString = "";
+    LOC.moveTo(1000);
+    LOC.run();
+    delay(5000);
+
+    LIN.moveTo(300);
+    LIN.run();
+    delay(5000);
+
+    LIN.moveTo(0);
+    LIN.run();
+    delay(5000);
+
+    LOC.moveTo(0);
+    LOC.run();
+    delay(5000);
+
   }
 
-  // ASSIGN MOTORS TO NEW POSITIONS
-  for (int i = 0; i < numSteppers; i++) {
-    steppers[i]->moveTo(positions[i]);
-  }
 
-  for (int i = 0; i < numSteppers; i++) {
-    steppers[i]->run();
-  }
-}
-
-void deactivate() {
-  for (int i = 0; i < numSteppers; i++) {
-    activated[i] = false;
-  }
-}
-
-boolean isValidNumber(String str) {
-  boolean isNum = false;
-  for (byte i = 0; i < str.length(); i++)
-  {
-    isNum = isDigit(str.charAt(i)) || str.charAt(i) == '+' || str.charAt(i) == '.' || str.charAt(i) == '-';
-    if (!isNum) return false;
-  }
-  return isNum;
 }
