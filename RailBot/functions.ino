@@ -1,3 +1,41 @@
+///*
+//  Home the linear actuator, set its step count to 0
+//*/
+void homeLIN() {
+  Serial.println("");
+  Serial.println("Homing Linear Actuator");
+  encoderLIN.clearCount();
+  
+  bool skipped = false;
+  int curStep = 0;
+  int lastReading, curReading, diff;
+
+  while (!skipped) {
+    curStep+=100;
+    LIN.runToNewPosition(curStep);
+    //LIN.moveTo(curStep);
+    //LIN.run();
+    curReading = (int32_t)encoderLIN.getCount();
+    diff = (curStep/4 - curReading/3);
+    Serial.println("Linear Actuator Encoder = " + String(curReading) + ":  Steps = " + curStep  + ":  Diff = " + diff);
+    if (diff > 20 || diff < -40)
+      skipped = true;
+  }
+
+  if (skipped) {
+    LIN.stop();
+    Serial.println("Linear Actuator Skipped -- Encountered Hard Stop");
+    // LIN.setCurrentPosition(); // reset step count to 0 
+    encoderLIN.clearCount();
+ 
+    Serial.println("Linear Actuator -- Moving 200 Steps");
+    LIN.runToNewPosition(200);
+    Serial.println("Linear Actuator -- Moving 200 Steps");
+    LIN.runToNewPosition(0);
+  }
+
+}
+
 
 ///*
 //  SerialEvent occurs whenever a new data comes in the hardware serial RX. This
@@ -14,22 +52,22 @@ void serialEvent() {
   readString.trim();
   if (readString.length() > 0) {
 
-    // function linearActuator 
+    // function linearActuator
     // steppers[i]->moveTo(positions[i]);
 
-    // autonomous loop: 
-    // go to arch, then go to origin (hard stops) 
-    // assume bottom blocks are placed. 
-    // specify next address (C1, H1, E1, ... 
+    // autonomous loop:
+    // go to arch, then go to origin (hard stops)
+    // assume bottom blocks are placed.
+    // specify next address (C1, H1, E1, ...
     // where each address can be represented by number of steps (arch, loc) from the origin
 
     if (readString == "LOC" || readString == "loc") {
       Serial.println("Locomotion ACTIVE");
-      }
+    }
 
     if (readString == "LIN" || readString == "lin") {
       Serial.println("Linear ACTIVE");
-     }
+    }
 
     if (readString == "G" || readString == "grip") {
       Serial.println("Activated Grip");
@@ -54,22 +92,22 @@ void serialEvent() {
       Serial.println(val);
       // pos = val;
       //for (int i = 0; i < numSteppers; i++) {
-        //if (activated[i]) {
-        //  positions[i] = val;
-        //}
+      //if (activated[i]) {
+      //  positions[i] = val;
+      //}
       //}
     }
     readString = "";
   }
 
-//  // ASSIGN MOTORS TO NEW POSITIONS
-//  for (int i = 0; i < numSteppers; i++) {
-//    steppers[i]->moveTo(positions[i]);
-//  }
-//
-//  for (int i = 0; i < numSteppers; i++) {
-//    steppers[i]->run();
-//  }
+  //  // ASSIGN MOTORS TO NEW POSITIONS
+  //  for (int i = 0; i < numSteppers; i++) {
+  //    steppers[i]->moveTo(positions[i]);
+  //  }
+  //
+  //  for (int i = 0; i < numSteppers; i++) {
+  //    steppers[i]->run();
+  //  }
 }
 
 
