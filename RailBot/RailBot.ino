@@ -9,17 +9,27 @@ const int gripClose = 30; // degrees to make the gripper close
 
 const int gripSense = A0; 
 
+const int LIN_STP = 13; // pins for linear actuator driver
+const int LIN_DIR = 12;
+const int LIN_ENA = 27;
+
+const int LOC_STP = 33; // pins for locomotion driver
+const int LOC_DIR = 15;
+const int LOC_ENA = 32;
+
 const int SPEED = 400;
 const int ACCELERATION = 400;
 
 Servo gripper;
 bool COMMAND = false;
 String readString;
-AccelStepper LIN(AccelStepper::DRIVER, 13, 12);
+
 // AccelStepper LIN(AccelStepper::FULL4WIRE, 13, 12, 27, 33);
-AccelStepper LOC(AccelStepper::FULL4WIRE, 15, 32, 14, 22);
+AccelStepper LIN(AccelStepper::DRIVER, LIN_STP, LIN_DIR);
+AccelStepper LOC(AccelStepper::DRIVER, LOC_STP, LOC_DIR);
 
 ESP32Encoder encoderLIN;
+ESP32Encoder encoderLOC;
 
 int pos = 0;
 
@@ -34,6 +44,7 @@ void setup() {
 
   ESP32Encoder::useInternalWeakPullResistors=UP;   // Enable the weak pull up resistors
   encoderLIN.attachHalfQuad(34, 39); // Attache pins for use as encoder pins
+  encoderLOC.attachHalfQuad(34, 39); // Attache pins for use as encoder pins
   
   // Allow allocation of all timers
 //  ESP32PWM::allocateTimer(0);
