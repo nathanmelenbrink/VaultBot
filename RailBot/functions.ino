@@ -5,33 +5,67 @@ void homeLIN() {
   Serial.println("");
   Serial.println("Homing Linear Actuator");
   encoderLIN.clearCount();
-  
+
   bool skipped = false;
   int curStep = 0;
   int lastReading, curReading, diff;
 
   while (!skipped) {
-    curStep+=100;
+    curStep += 10;
     LIN.runToNewPosition(curStep);
     //LIN.moveTo(curStep);
     //LIN.run();
     curReading = (int32_t)encoderLIN.getCount();
-    diff = (curStep/4 - curReading/3);
+    diff = (curStep / 4 - curReading / 3);
     Serial.println("Linear Actuator Encoder = " + String(curReading) + ":  Steps = " + curStep  + ":  Diff = " + diff);
-    if (diff > 20 || diff < -40)
+    if (diff > 3 || diff < -3)
       skipped = true;
   }
 
   if (skipped) {
     LIN.stop();
     Serial.println("Linear Actuator Skipped -- Encountered Hard Stop");
-    // LIN.setCurrentPosition(); // reset step count to 0 
+    LIN.setCurrentPosition(0); // reset step count to 0
     encoderLIN.clearCount();
- 
-    Serial.println("Linear Actuator -- Moving 200 Steps");
-    LIN.runToNewPosition(200);
-    Serial.println("Linear Actuator -- Moving 200 Steps");
-    LIN.runToNewPosition(0);
+
+    Serial.println("Linear Actuator -- Moving 1000 Steps");
+    LIN.runToNewPosition(-1200);
+    //    Serial.println("Linear Actuator -- Moving 200 Steps");
+    //    LIN.runToNewPosition(0);
+  }
+
+}
+
+///*
+//  Home the linear actuator, set its step count to 0
+//*/
+void pick() {
+  Serial.println("");
+  Serial.println("Pick block");
+
+  bool contact = false;
+  int curStep = LIN.currentPosition();
+  int lastReading, curReading;
+
+  while (!contact) {
+    curStep += 10;
+    LIN.runToNewPosition(curStep);
+    //LIN.moveTo(curStep);
+    //LIN.run();
+    Serial.println("about to measure sensor");
+    curReading = analogRead(gripSense);
+    Serial.println("Linear Actuator -- Sensor Reading = " + curReading);
+    if (curReading > 3000) {
+      Serial.println("Linear Actuator made contact with block");
+      contact = true;
+    }
+  }
+
+  if (contact) {
+    LIN.stop();
+    Serial.println("Linear Actuator -- stopped");
+    Serial.println("Linear Actuator -- Expanding gripper");
+    gripper.write(gripClose);
   }
 
 }

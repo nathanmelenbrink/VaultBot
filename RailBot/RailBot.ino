@@ -7,7 +7,8 @@ const int gripperPin = 18;
 const int gripOpen = 160; // degrees to make the gripper open
 const int gripClose = 30; // degrees to make the gripper close
 
-const int gripSense = A0; 
+const int gripSense = A0; // contact sensor on the gripper
+const int hallSense = 14; // Hall effect sensor 
 
 const int LIN_STP = 13; // pins for linear actuator driver
 const int LIN_DIR = 12;
@@ -44,29 +45,26 @@ void setup() {
 
   ESP32Encoder::useInternalWeakPullResistors=UP;   // Enable the weak pull up resistors
   encoderLIN.attachHalfQuad(34, 39); // Attache pins for use as encoder pins
-  encoderLOC.attachHalfQuad(34, 39); // Attache pins for use as encoder pins
+  encoderLOC.attachHalfQuad(36, 4); // Attache pins for use as encoder pins
   
-  // Allow allocation of all timers
-//  ESP32PWM::allocateTimer(0);
-//  ESP32PWM::allocateTimer(1);
-//  ESP32PWM::allocateTimer(2);
-//  ESP32PWM::allocateTimer(3);
-//  gripper.setPeriodHertz(50);    // standard 50 hz servo
   gripper.attach(gripperPin, 1000, 2000); // attaches the servo on pin 18 to the servo object
 
-  // homeLIN();
+  //homeLIN();
 }
 
 void loop() {
-
+  serialEvent();
+  // update autonomous mode 
+  // update command mode 
   // COMMAND Mode
   if (!COMMAND) {
 
     // AUTONOMOUS Mode
 
-    Serial.println(analogRead(A0)); 
+    //Serial.println(analogRead(A0)); 
     // ASSIGN MOTORS TO NEW POSITIONS
-
+    //pick();
+    
 
 //    LOC.moveTo(1000);
 //    LOC.run();
