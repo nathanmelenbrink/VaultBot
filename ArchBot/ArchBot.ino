@@ -4,14 +4,14 @@
    ADC 1 pins are okay - that's 32-39, which, for the adafruit Huzzah, includes 32=A7,33=A9, 34=A2, 36= A4, 39=A3.
 
 */
-
 #include <esp_now.h>
 #include <WiFi.h>
 #include <AccelStepper.h>
+#include <ESP32Encoder.h>
 
-const int ARC_STP = 13; // define Step pin
-const int ARC_DIR = 12; // define Direction pin
-// const int X0_ENA = ; // define Enable pin
+const int ARC_STP = 32; // define Step pin
+const int ARC_DIR = 14; // define Direction pin
+const int ARC_ENA = 15; // define Enable pin
 
 // REPLACE WITH THE MAC Address of the board you want to send to
 // uint8_t broadcastAddress[] =  {0x24, 0x62, 0xAB, 0xB0, 0x34, 0xA8};    // Arch board
@@ -25,25 +25,9 @@ byte outgoingByte;
 
 AccelStepper ARC(AccelStepper::DRIVER, ARC_STP, ARC_DIR);
 
-// Callback when data is sent
-void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  Serial.print("\r\nLast Packet Send Status:\t");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
-  if (status == 0) {
-    success = "Delivery Success :)";
-  }
-  else {
-    success = "Delivery Fail :(";
-  }
-}
+ESP32Encoder encoderARC;
 
-// Callback when data is received
-void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
-  memcpy(&incomingByte, incomingData, sizeof(incomingByte));
-  Serial.print("Bytes received: ");
-  Serial.println(len);
-
-}
+long pos;
 
 void setup() {
   // Init Serial Monitor
@@ -51,8 +35,6 @@ void setup() {
 
   pinMode (ARC_STP, OUTPUT);
   pinMode (ARC_DIR, OUTPUT);
-  ARC.setMaxSpeed(400);
-  ARC.setAcceleration(400);
 
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
@@ -81,8 +63,14 @@ void setup() {
   // Register for a callback function that will be called when data is received
   esp_now_register_recv_cb(OnDataRecv);
 
-  ARC.setMaxSpeed(1000);
-  ARC.setAcceleration(1000);
+  ARC.setMaxSpeed(400);
+  ARC.setAcceleration(400);
+
+  ESP32Encoder::useInternalWeakPullResistors=UP;   // Enable the weak pull up resistors
+  encoderARC.attachHalfQuad(39, 36); // Attach pins for use as encoder pins
+
+  homeARC();
+  pos = 4900;
 }
 
 void loop() {
@@ -100,12 +88,13 @@ void loop() {
   //
   //  delay(1000);
 
-
+  //Serial.println((int32_t)encoderARC.getCount());
   if (ARC.distanceToGo() == 0)
   {
-    delay(1000);
-    ARC.moveTo(rand()%2000);
-
+    delay(2000);
+    ARC.moveTo(pos);
+    Serial.println("running again");
+    pos += 4900; 
   }
   ARC.run();
 
