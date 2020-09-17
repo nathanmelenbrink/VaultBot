@@ -11,7 +11,7 @@ void homeARC() {
   int lastReading, curReading, diff;
 
   while (!skipped) {
-    curStep -= 100;
+    curStep += 100;
     ARC.runToNewPosition(curStep);
     curReading = (int32_t)encoderARC.getCount();
     diff = (abs(curStep / 2) - abs(curReading));
@@ -27,7 +27,7 @@ void homeARC() {
     encoderARC.clearCount();
 
     Serial.println("Arch Elevator -- Moving 2000 Steps");
-    ARC.runToNewPosition(1870);
+    ARC.runToNewPosition(-1870);
     ARC.setCurrentPosition(0); // reset step count to 0
     encoderARC.clearCount();
 
