@@ -9,6 +9,9 @@
 #include <AccelStepper.h>
 #include <ESP32Encoder.h>
 
+#include "soc/timer_group_struct.h"
+#include "soc/timer_group_reg.h"
+
 const int ARC_STP = 32; // define Step pin
 const int ARC_DIR = 14; // define Direction pin
 const int ARC_ENA = 15; // define Enable pin
@@ -20,7 +23,7 @@ uint8_t broadcastAddress[] =  {0x24, 0x62, 0xAB, 0xD1, 0xB5, 0x94};  // Robot bo
 // Variable to store if sending data was successful
 String success;
 
-byte incomingByte;
+long incomingByte = -4600;
 byte outgoingByte;
 
 AccelStepper ARC(AccelStepper::DRIVER, ARC_STP, ARC_DIR);
@@ -28,10 +31,12 @@ AccelStepper ARC(AccelStepper::DRIVER, ARC_STP, ARC_DIR);
 ESP32Encoder encoderARC;
 
 long pos;
+long valB = -1400;
+esp_now_peer_info_t peerInfo;
 
 void setup() {
   // Init Serial Monitor
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   pinMode (ARC_STP, OUTPUT);
   pinMode (ARC_DIR, OUTPUT);
@@ -41,38 +46,16 @@ void setup() {
   ARC.setMaxSpeed(400);
   ARC.setAcceleration(400);
 
-  ESP32Encoder::useInternalWeakPullResistors=UP;   // Enable the weak pull up resistors
+  ESP32Encoder::useInternalWeakPullResistors = UP; // Enable the weak pull up resistors
   encoderARC.attachHalfQuad(39, 36); // Attach pins for use as encoder pins
 
   homeARC();
-  pos = -4900;
+  //pos = -4600;
 }
 
 void loop() {
-  // setup ESPNOW to consume STEP numbers and send ACK upon completion 
-  
-  //  Serial.println(incomingByte);
-  //  outgoingByte = incomingByte + 1;
-  //  // Send message via ESP-NOW
-  //  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &outgoingByte, sizeof(outgoingByte));
-  //
-  //  if (result == ESP_OK) {
-  //    Serial.println("Sent with success");
-  //  }
-  //  else {
-  //    Serial.println("Error sending the data");
-  //  }
-  //
-  //  delay(1000);
-
-  //Serial.println((int32_t)encoderARC.getCount());
-  if (ARC.distanceToGo() == 0)
-  {
-    delay(2000);
-    ARC.moveTo(pos);
-    Serial.println("running again");
-    // pos -= 4900; 
-  }
-  ARC.run();
+  TIMERG0.wdt_wprotect = TIMG_WDT_WKEY_VALUE;
+  TIMERG0.wdt_feed = 1;
+  TIMERG0.wdt_wprotect = 0;
 
 }

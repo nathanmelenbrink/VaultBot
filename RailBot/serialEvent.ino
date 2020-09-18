@@ -21,31 +21,31 @@ void serialEvent() {
       Serial.println("G: Expands gripper");
       Serial.println("R: Retracts gripper");
     }
-    
+
     if (readString == "A" || readString == "a") {
       Serial.println("Activating ARCH...");
-      locomotionActive = false; 
-      linearActive = false; 
-      archActive = true; 
-      // TODO: send message to ArchBot 
+      locomotionActive = false;
+      linearActive = false;
+      archActive = true;
+      // TODO: send message to ArchBot
     }
-    
+
     if (readString == "L" || readString == "l") {
       Serial.println("Linear ACTIVE");
-      locomotionActive = false; 
-      linearActive = true; 
-      archActive = false; 
-      digitalWrite(LOC_ENA, LOW); 
-      digitalWrite(LIN_ENA, HIGH); 
+      locomotionActive = false;
+      linearActive = true;
+      archActive = false;
+      digitalWrite(LOC_ENA, LOW);
+      digitalWrite(LIN_ENA, HIGH);
     }
-    
+
     if (readString == "O" || readString == "o") {
       Serial.println("Locomotion ACTIVE");
-      locomotionActive = true; 
-      linearActive = false; 
-      archActive = false; 
-      digitalWrite(LOC_ENA, HIGH); 
-      digitalWrite(LIN_ENA, LOW); 
+      locomotionActive = true;
+      linearActive = false;
+      archActive = false;
+      digitalWrite(LOC_ENA, HIGH);
+      digitalWrite(LIN_ENA, LOW);
     }
 
     if (readString == "G" || readString == "g") {
@@ -66,7 +66,7 @@ void serialEvent() {
 
     if (readString == "T" || readString == "t") {
       Serial.println("test function");
-      testRun(); 
+      testRun();
     }
 
     if (isValidNumber(readString)) {
@@ -76,10 +76,19 @@ void serialEvent() {
       if (linearActive) LIN.runToNewPosition(val);
       if (locomotionActive) LOC.runToNewPosition(val);
       if (archActive) {
-        // function to send int to ArchBot
+        // Send message via ESP-NOW
+        esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &val, sizeof(val));
+
+        if (result == ESP_OK) {
+          Serial.println("Sent with success");
+        }
+        else {
+          Serial.println("Error sending the data");
+        }
+
       }
     }
-    
+
     readString = "";
   }
 

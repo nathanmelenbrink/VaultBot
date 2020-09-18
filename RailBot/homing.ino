@@ -82,9 +82,9 @@ void homeARC() {
   Serial.println("Railbot: Homing Elevator Arch");
   
     //  Serial.println(incomingByte);
-    outgoingByte = 'h';
+    byte val = 'h';
     // Send message via ESP-NOW
-    esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &outgoingByte, sizeof(outgoingByte));
+    esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &val, sizeof(val));
   
     if (result == ESP_OK) {
       Serial.println("Sent with success");

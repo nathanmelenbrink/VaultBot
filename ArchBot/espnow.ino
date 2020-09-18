@@ -14,7 +14,7 @@ void setupESPNOW(){
   esp_now_register_send_cb(OnDataSent);
 
   // Register peer
-  esp_now_peer_info_t peerInfo;
+  //esp_now_peer_info_t peerInfo;
   memcpy(peerInfo.peer_addr, broadcastAddress, 6);
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
@@ -45,5 +45,5 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&incomingByte, incomingData, sizeof(incomingByte));
   Serial.print("Bytes received: ");
   Serial.println(len);
-
+  moveARC(incomingByte);
 }

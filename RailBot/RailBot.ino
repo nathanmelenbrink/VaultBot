@@ -8,10 +8,10 @@
 uint8_t broadcastAddress[] =  {0x24, 0x62, 0xAB, 0xB0, 0x34, 0xA8};    // Arch board
 // uint8_t broadcastAddress[] =  {0x24, 0x62, 0xAB, 0xD1, 0xB5, 0x94};  // Robot board
 
-// Variables for ESPNOW 
+// Variables for ESPNOW
 String success;
 byte incomingByte;
-byte outgoingByte;
+//byte outgoingByte;
 
 // Recommended PWM GPIO pins on the ESP32 include 2,4,12-19,21-23,25-27,32-33
 const int gripperPin = 18;
@@ -19,7 +19,7 @@ const int gripExpand = 120; // degrees to make the gripper expand
 const int gripRetract = 0; // degrees to make the gripper retract
 
 const int gripSense = A0; // contact sensor on the gripper
-const int hallSense = 14; // Hall effect sensor 
+const int hallSense = 14; // Hall effect sensor
 
 const int LOC_ENA = 13; // pins for linear actuator driver
 const int LOC_STP = 12;
@@ -35,13 +35,13 @@ const int ACCELERATION = 400;
 Servo gripper;
 bool COMMAND = false;
 bool linearActive = false;
-bool locomotionActive = false; 
+bool locomotionActive = false;
 bool archActive = false;
 bool hasBlock = false;
 char curRow = 'B';
-int curArch = 0; 
+int curArch = 0;
 char nextRow = 'B';
-int nextArch = 0; 
+int nextArch = 0;
 String readString;
 
 AccelStepper LIN(AccelStepper::DRIVER, LIN_STP, LIN_DIR);
@@ -50,7 +50,8 @@ AccelStepper LOC(AccelStepper::DRIVER, LOC_STP, LOC_DIR);
 ESP32Encoder encoderLIN;
 ESP32Encoder encoderLOC;
 
-int pos = 0;
+long pos = 0;
+esp_now_peer_info_t peerInfo;
 
 void setup() {
   // set all motor control pins to output
@@ -59,11 +60,11 @@ void setup() {
   LIN.setMaxSpeed(SPEED);
   LIN.setAcceleration(ACCELERATION);
 
-  Serial.begin(9600);
+  Serial.begin(115200);
 
-  ESP32Encoder::useInternalWeakPullResistors=UP;   // Enable the weak pull up resistors
-  encoderLIN.attachHalfQuad(34, 39); // Attache pins for use as encoder pins
-  encoderLOC.attachHalfQuad(36, 4); // Attache pins for use as encoder pins
+  ESP32Encoder::useInternalWeakPullResistors = UP; // Enable the weak pull up resistors
+  encoderLIN.attachHalfQuad(34, 39); // Attach pins for use as encoder pins
+  encoderLOC.attachHalfQuad(36, 4); // Attach pins for use as encoder pins
 
   gripper.setPeriodHertz(50); // standard 50 hz servo
   gripper.attach(gripperPin, 1000, 2000); // attaches the servo on pin 18 to the servo object
@@ -74,7 +75,7 @@ void setup() {
   pinMode(LIN_STP, OUTPUT);
   pinMode(LIN_DIR, OUTPUT);
   pinMode(LIN_ENA, OUTPUT);
-  
+
   setupESPNOW();
   // homeLIN();
 }
@@ -82,7 +83,7 @@ void setup() {
 void loop() {
 
   // The loop function watches for a Serial event (this could be changed to an interrupt, but it isn't by default for ESP32)
-  // 
+  //
   serialEvent();
 
 }
