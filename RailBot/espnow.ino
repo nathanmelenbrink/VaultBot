@@ -5,7 +5,7 @@ void setupESPNOW(){
 
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
-    Serial.println("Error initializing ESP-NOW");
+    SerialBT.println("Error initializing ESP-NOW");
     return;
   }
 
@@ -21,7 +21,7 @@ void setupESPNOW(){
 
   // Add peer
   if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-    Serial.println("Failed to add peer");
+    SerialBT.println("Failed to add peer");
     return;
   }
   // Register for a callback function that will be called when data is received
@@ -30,8 +30,8 @@ void setupESPNOW(){
 
 // Callback when data is sent
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  Serial.print("\r\nLast Packet Send Status:\t");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  SerialBT.print("\r\nLast Packet Send Status:\t");
+  SerialBT.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
   if (status == 0) {
     success = "Delivery Success";
   }
@@ -43,7 +43,8 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 // Callback when data is received
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&incomingByte, incomingData, sizeof(incomingByte));
-  Serial.print("Bytes received: ");
-  Serial.println(len);
-
+  SerialBT.print("Bytes received: ");
+  SerialBT.println(len);
+  SerialBT.println(incomingByte);
+  archMessage = 50; 
 }

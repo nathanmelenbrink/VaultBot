@@ -6,24 +6,25 @@
 //*/
 
 void serialEvent() {
-  while (Serial.available()) {
+  while(SerialBT.available()){
+  //while (Serial.available()) {
     delay(3);
-    char c = Serial.read();
+    char c = SerialBT.read();
     readString += c;
   }
   readString.trim();
   if (readString.length() > 0) {
 
     if (readString == "H" || readString == "h") {
-      Serial.println("A: Activates arch actuator");
-      Serial.println("L: Activates linear actuator");
-      Serial.println("O: Activates locomotion motor");
-      Serial.println("G: Expands gripper");
-      Serial.println("R: Retracts gripper");
+      SerialBT.println("A: Activates arch actuator");
+      SerialBT.println("L: Activates linear actuator");
+      SerialBT.println("O: Activates locomotion motor");
+      SerialBT.println("G: Expands gripper");
+      SerialBT.println("R: Retracts gripper");
     }
 
     if (readString == "A" || readString == "a") {
-      Serial.println("Activating ARCH...");
+      SerialBT.println("Activating ARCH...");
       locomotionActive = false;
       linearActive = false;
       archActive = true;
@@ -31,7 +32,7 @@ void serialEvent() {
     }
 
     if (readString == "L" || readString == "l") {
-      Serial.println("Linear ACTIVE");
+      SerialBT.println("Linear ACTIVE");
       locomotionActive = false;
       linearActive = true;
       archActive = false;
@@ -40,7 +41,7 @@ void serialEvent() {
     }
 
     if (readString == "O" || readString == "o") {
-      Serial.println("Locomotion ACTIVE");
+      SerialBT.println("Locomotion ACTIVE");
       locomotionActive = true;
       linearActive = false;
       archActive = false;
@@ -49,30 +50,38 @@ void serialEvent() {
     }
 
     if (readString == "G" || readString == "g") {
-      Serial.println("Expanding gripper");
+      SerialBT.println("Expanding gripper");
+      //gripper.attach(gripperPin, 1000, 2000); // attaches the servo on pin 18 to the servo object
       // for (pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
       gripper.write(gripExpand);    // tell servo to go to position in variable 'pos'
       //  delay(15);             // waits 15ms for the servo to reach the position
       //}
+      //gripper.detach(); // attaches the servo on pin 18 to the servo object
     }
 
     if (readString == "R" || readString == "r") {
-      Serial.println("Retracting gripper");
+      SerialBT.println("Retracting gripper");
+      //gripper.attach(gripperPin, 1000, 2000); // attaches the servo on pin 18 to the servo object
       //for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
       gripper.write(gripRetract);    // tell servo to go to position in variable 'pos'
       // delay(15);             // waits 15ms for the servo to reach the position
       //}
+      //gripper.detach(); // attaches the servo on pin 18 to the servo object
     }
 
     if (readString == "T" || readString == "t") {
-      Serial.println("test function");
+      SerialBT.println("test function");
       testRun();
+    }
+    if (readString == "Y" || readString == "y") {
+      SerialBT.println("test function pt 2");
+      testRun2();
     }
 
     if (isValidNumber(readString)) {
-      Serial.println("valid number");
+      SerialBT.println("valid number");
       int val = readString.toInt();
-      Serial.println(val);
+      SerialBT.println(val);
       if (linearActive) LIN.runToNewPosition(val);
       if (locomotionActive) LOC.runToNewPosition(val);
       if (archActive) {
@@ -80,10 +89,10 @@ void serialEvent() {
         esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &val, sizeof(val));
 
         if (result == ESP_OK) {
-          Serial.println("Sent with success");
+          SerialBT.println("Sent with success");
         }
         else {
-          Serial.println("Error sending the data");
+          SerialBT.println("Error sending the data");
         }
 
       }

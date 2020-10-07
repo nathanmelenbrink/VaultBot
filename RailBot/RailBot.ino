@@ -3,6 +3,9 @@
 #include <ESP32Servo.h>
 #include <ESP32Encoder.h>
 #include <AccelStepper.h>
+#include "BluetoothSerial.h"
+ 
+BluetoothSerial SerialBT;
 
 // REPLACE WITH THE MAC Address of the board you want to send to
 uint8_t broadcastAddress[] =  {0x24, 0x62, 0xAB, 0xB0, 0x34, 0xA8};    // Arch board
@@ -29,8 +32,8 @@ const int LIN_ENA = 33; // pins for locomotion driver
 const int LIN_STP = 15;
 const int LIN_DIR = 32;
 
-const int SPEED = 400;
-const int ACCELERATION = 400;
+const int SPEED = 1000;
+const int ACCELERATION = 1000;
 
 Servo gripper;
 bool COMMAND = false;
@@ -42,6 +45,10 @@ char curRow = 'B';
 int curArch = 0;
 char nextRow = 'B';
 int nextArch = 0;
+int archMessage = 0;
+int archVal = 0; 
+int interval = 613;
+int offset = 38; 
 String readString;
 
 AccelStepper LIN(AccelStepper::DRIVER, LIN_STP, LIN_DIR);
@@ -63,8 +70,8 @@ void setup() {
   Serial.begin(115200);
 
   ESP32Encoder::useInternalWeakPullResistors = UP; // Enable the weak pull up resistors
-  encoderLIN.attachHalfQuad(34, 39); // Attach pins for use as encoder pins
-  encoderLOC.attachHalfQuad(36, 4); // Attach pins for use as encoder pins
+  encoderLIN.attachHalfQuad(39, 34); // Attach pins for use as encoder pins
+  encoderLOC.attachHalfQuad(4, 36); // Attach pins for use as encoder pins
 
   gripper.setPeriodHertz(50); // standard 50 hz servo
   gripper.attach(gripperPin, 1000, 2000); // attaches the servo on pin 18 to the servo object
@@ -77,7 +84,15 @@ void setup() {
   pinMode(LIN_ENA, OUTPUT);
 
   setupESPNOW();
-  // homeLIN();
+  
+  if(!SerialBT.begin("ESP32")){
+    Serial.println("An error occurred initializing Bluetooth");
+  }
+
+  homeLOC();
+  homeLIN();
+  //testRun();
+  //testRun();
 }
 
 void loop() {
@@ -85,5 +100,6 @@ void loop() {
   // The loop function watches for a Serial event (this could be changed to an interrupt, but it isn't by default for ESP32)
   //
   serialEvent();
+  //testRun();
 
 }

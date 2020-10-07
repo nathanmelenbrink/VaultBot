@@ -12,10 +12,10 @@ void homeARC() {
   int lastReading, curReading, diff;
 
   while (!skipped) {
-    curStep += 200;
+    curStep -= 200;
     ARC.runToNewPosition(curStep);
     curReading = (int32_t)encoderARC.getCount();
-    diff = (abs(curStep / 2) - abs(curReading));
+    diff = (abs(curStep) - abs(curReading / 12));
     Serial.println("Arch Elevator Encoder = " + String(curReading) + ":  Steps = " + curStep  + ":  Diff = " + diff);
     if (diff > 50 || diff < -50)
       skipped = true;
@@ -26,19 +26,19 @@ void homeARC() {
     Serial.println("Arch Elevator -- Encountered Hard Stop");
     Serial.println("Arch Elevator -- Fine Tuning");
     ARC.setCurrentPosition(0); // reset step count to 0
-    curStep = -200;
+    curStep = 20;
     ARC.runToNewPosition(curStep);
     ARC.setCurrentPosition(0); // reset step count to 0
     curStep = 0;
     encoderARC.clearCount();
-    
+
     while (!smallSkipped) {
-      curStep += 10;
+      curStep -= 10;
       ARC.runToNewPosition(curStep);
       curReading = (int32_t)encoderARC.getCount();
-      diff = (abs(curStep / 2) - abs(curReading));
+      diff = (abs(curStep) - abs(curReading / 12));
       Serial.println("Arch Elevator Encoder = " + String(curReading) + ":  Steps = " + curStep  + ":  Diff = " + diff);
-      if (diff > 50 || diff < -50)
+      if (diff > 3 || diff < -10)
         smallSkipped = true;
     }
   }
@@ -50,7 +50,7 @@ void homeARC() {
     encoderARC.clearCount();
 
     Serial.println("Arch Elevator -- Moving to Row B");
-    ARC.runToNewPosition(valB * -1);
+    ARC.runToNewPosition(valB * 1);
     //ARC.setCurrentPosition(0); // reset step count to 0
     //encoderARC.clearCount();
 
@@ -59,11 +59,18 @@ void homeARC() {
 }
 
 void moveARC(int steps) {
-  ARC.runToNewPosition(steps * -1);
+  ARC.runToNewPosition(steps * 1);
 
   Serial.print("Arch Reached Destination: ");
-  Serial.println(steps * -1);
-  Serial.print("Encoder Steps: "); Serial.println((int32_t)encoderARC.getCount());
-  //outgoingByte = 'k';
-  //esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &outgoingByte, sizeof(outgoingByte));
+  Serial.println(steps * 1);
+  int curReading = (int32_t)encoderARC.getCount();
+  int diff = (abs(steps) - abs(curReading/12));
+  Serial.print("Encoder Steps: "); Serial.println(curReading);
+  Serial.print("Difference: "); Serial.println(diff);
+  if (diff < 10 && diff > -10) {
+    outgoingByte = 'k';
+  } else {
+    outgoingByte = 'e';
+  }
+  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &outgoingByte, sizeof(outgoingByte));
 }

@@ -31,8 +31,8 @@ AccelStepper ARC(AccelStepper::DRIVER, ARC_STP, ARC_DIR);
 ESP32Encoder encoderARC;
 
 long pos;
-long valB = 300;
-long inc = 4900;
+long valB = 38; // 300
+long inc = 613; // 4900
 esp_now_peer_info_t peerInfo;
 
 void setup() {
@@ -44,8 +44,8 @@ void setup() {
 
   setupESPNOW();
 
-  ARC.setMaxSpeed(1000);
-  ARC.setAcceleration(400);
+  ARC.setMaxSpeed(500);
+  ARC.setAcceleration(200);
 
   ESP32Encoder::useInternalWeakPullResistors = UP; // Enable the weak pull up resistors
   encoderARC.attachHalfQuad(39, 36); // Attach pins for use as encoder pins

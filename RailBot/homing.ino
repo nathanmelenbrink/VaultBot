@@ -10,10 +10,10 @@ void homeLIN() {
   int curStep = 0;
   int lastReading, curReading, diff;
 
-  digitalWrite(LIN_ENA, HIGH); // enable locomotion motor
+  digitalWrite(LIN_ENA, HIGH); // enable linear motor
   
   while (!skipped) {
-    curStep -= 50;
+    curStep += 50;
     LIN.runToNewPosition(curStep);
     //LIN.moveTo(curStep);
     //LIN.run();
@@ -27,12 +27,12 @@ void homeLIN() {
   if (skipped) {
     LIN.stop();
     Serial.println("Linear Actuator Skipped -- Encountered Hard Stop");
-    LIN.setCurrentPosition(0); // reset step count to 0
+    LIN.setCurrentPosition(1650); // reset step count to 0
     encoderLIN.clearCount();
 
     Serial.println("Linear Actuator -- Moving 100 Steps");
-    LIN.runToNewPosition(100);
-    digitalWrite(LIN_ENA, LOW); // disable linear actuator
+    LIN.runToNewPosition(1600);
+    //digitalWrite(LIN_ENA, LOW); // disable linear actuator
   }
 
 }
@@ -57,7 +57,7 @@ void homeLOC() {
     curReading = (int32_t)encoderLIN.getCount();
     diff = (curStep / 4 - curReading / 3);
     Serial.println("Locomotion Actuator Encoder = " + String(curReading) + ":  Steps = " + curStep  + ":  Diff = " + diff);
-    if (diff > 3 || diff < -3)
+    if (diff > 30 || diff < -30)
       skipped = true;
   }
 
