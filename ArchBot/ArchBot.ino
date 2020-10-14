@@ -23,7 +23,7 @@ uint8_t broadcastAddress[] =  {0x24, 0x62, 0xAB, 0xD1, 0xB5, 0x94};  // Robot bo
 // Variable to store if sending data was successful
 String success;
 
-long incomingByte = -4600;
+long incomingByte;
 byte outgoingByte;
 
 AccelStepper ARC(AccelStepper::DRIVER, ARC_STP, ARC_DIR);

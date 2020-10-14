@@ -41,13 +41,11 @@ bool linearActive = false;
 bool locomotionActive = false;
 bool archActive = false;
 bool hasBlock = false;
-char curRow = 'B';
-int curArch = 0;
-char nextRow = 'B';
-int nextArch = 0;
-int archMessage = 0;
+int curRow = 2;   //2
+int curCol = 0;   //0
+//int archMessage = 0;
 int archVal = 0; 
-int interval = 613;
+float interval = 612.4;
 int offset = 38; 
 String readString;
 
@@ -89,8 +87,6 @@ void setup() {
     Serial.println("An error occurred initializing Bluetooth");
   }
 
-  homeLOC();
-  homeLIN();
   //testRun();
   //testRun();
 }

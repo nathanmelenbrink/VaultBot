@@ -71,11 +71,11 @@ void serialEvent() {
 
     if (readString == "T" || readString == "t") {
       SerialBT.println("test function");
-      testRun();
+      //testRun();
     }
     if (readString == "Y" || readString == "y") {
-      SerialBT.println("test function pt 2");
-      testRun2();
+      SerialBT.println("Beginning AutoRun");
+      autoRun();
     }
 
     if (isValidNumber(readString)) {

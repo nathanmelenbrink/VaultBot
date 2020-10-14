@@ -12,12 +12,12 @@ void homeARC() {
   int lastReading, curReading, diff;
 
   while (!skipped) {
-    curStep -= 200;
+    curStep -= 20;
     ARC.runToNewPosition(curStep);
     curReading = (int32_t)encoderARC.getCount();
     diff = (abs(curStep) - abs(curReading / 12));
     Serial.println("Arch Elevator Encoder = " + String(curReading) + ":  Steps = " + curStep  + ":  Diff = " + diff);
-    if (diff > 50 || diff < -50)
+    if (diff > 20 || diff < -20)
       skipped = true;
   }
 
@@ -33,7 +33,7 @@ void homeARC() {
     encoderARC.clearCount();
 
     while (!smallSkipped) {
-      curStep -= 10;
+      curStep -= 2;
       ARC.runToNewPosition(curStep);
       curReading = (int32_t)encoderARC.getCount();
       diff = (abs(curStep) - abs(curReading / 12));
@@ -50,25 +50,24 @@ void homeARC() {
     encoderARC.clearCount();
 
     Serial.println("Arch Elevator -- Moving to Row B");
-    ARC.runToNewPosition(valB * 1);
+    ARC.runToNewPosition(valB + inc);
     //ARC.setCurrentPosition(0); // reset step count to 0
     //encoderARC.clearCount();
-
   }
 
 }
 
 void moveARC(int steps) {
-  ARC.runToNewPosition(steps * 1);
+  ARC.runToNewPosition(steps);
 
   Serial.print("Arch Reached Destination: ");
-  Serial.println(steps * 1);
+  Serial.println(steps);
   int curReading = (int32_t)encoderARC.getCount();
   int diff = (abs(steps) - abs(curReading/12));
   Serial.print("Encoder Steps: "); Serial.println(curReading);
   Serial.print("Difference: "); Serial.println(diff);
   if (diff < 10 && diff > -10) {
-    outgoingByte = 'k';
+    outgoingByte = 'e';
   } else {
     outgoingByte = 'e';
   }
