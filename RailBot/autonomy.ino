@@ -146,9 +146,8 @@ void pickAndPlace(int row, int col) {
   }
   
   // locomotes col blocks out
-  digitalWrite(LOC_ENA, HIGH);
-  LOC.runToNewPosition((-500 * col)-30);
-  digitalWrite(LOC_ENA, LOW);
+  locomote((-500 * col)-30);
+
 
   // places block
   digitalWrite(LIN_ENA, HIGH);

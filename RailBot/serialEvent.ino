@@ -15,7 +15,7 @@ void serialEvent() {
   readString.trim();
   if (readString.length() > 0) {
 
-    if (readString == "H" || readString == "h") {
+    if (readString == "E" || readString == "e") {
       SerialBT.println("A: Activates arch actuator");
       SerialBT.println("L: Activates linear actuator");
       SerialBT.println("O: Activates locomotion motor");
@@ -28,7 +28,6 @@ void serialEvent() {
       locomotionActive = false;
       linearActive = false;
       archActive = true;
-      // TODO: send message to ArchBot
     }
 
     if (readString == "L" || readString == "l") {
@@ -73,6 +72,13 @@ void serialEvent() {
       SerialBT.println("test function");
       //testRun();
     }
+
+    if (readString == "H" || readString == "h") {
+      SerialBT.println("homing");
+      homeLOC();
+      homeLIN();
+    }
+    
     if (readString == "Y" || readString == "y") {
       SerialBT.println("Beginning AutoRun");
       autoRun();
@@ -83,7 +89,7 @@ void serialEvent() {
       int val = readString.toInt();
       SerialBT.println(val);
       if (linearActive) LIN.runToNewPosition(val);
-      if (locomotionActive) LOC.runToNewPosition(val);
+      if (locomotionActive) locomote(val);
       if (archActive) {
         // Send message via ESP-NOW
         esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &val, sizeof(val));

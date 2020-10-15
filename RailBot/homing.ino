@@ -54,10 +54,10 @@ void homeLOC() {
   while (!skipped) {
     curStep += 10;
     LOC.runToNewPosition(curStep);
-    curReading = (int32_t)encoderLIN.getCount();
+    curReading = (int32_t)encoderLOC.getCount();
     diff = (curStep / 4 - curReading / 3);
     Serial.println("Locomotion Actuator Encoder = " + String(curReading) + ":  Steps = " + curStep  + ":  Diff = " + diff);
-    if (diff > 30 || diff < -30)
+    if (diff > 10 || diff < -10)
       skipped = true;
   }
 
