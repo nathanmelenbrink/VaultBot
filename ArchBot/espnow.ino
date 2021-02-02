@@ -3,6 +3,11 @@ void setupESPNOW(){
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
 
+  //uint8_t myAddress[] =  {0x24, 0x62, 0xAB, 0xB0, 0x34, 0xA8};    // Arch board
+  //esp_wifi_set_mac(ESP_IF_WIFI_STA, &myAddress[0]);
+  Serial.print("ESP Board MAC Address:  ");
+  Serial.println(WiFi.macAddress());
+  
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
     Serial.println("Error initializing ESP-NOW");

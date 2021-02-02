@@ -12,12 +12,12 @@ void homeARC() {
   int lastReading, curReading, diff;
 
   while (!skipped) {
-    curStep -= 20;
+    curStep -= 80;
     ARC.runToNewPosition(curStep);
     curReading = (int32_t)encoderARC.getCount();
-    diff = (abs(curStep) - abs(curReading / 12));
+    diff = (abs(curStep) - abs(curReading / 5));
     Serial.println("Arch Elevator Encoder = " + String(curReading) + ":  Steps = " + curStep  + ":  Diff = " + diff);
-    if (diff > 20 || diff < -20)
+    if (diff > 40 || diff < -40)
       skipped = true;
   }
 
@@ -33,12 +33,12 @@ void homeARC() {
     encoderARC.clearCount();
 
     while (!smallSkipped) {
-      curStep -= 2;
+      curStep -= 20;
       ARC.runToNewPosition(curStep);
       curReading = (int32_t)encoderARC.getCount();
-      diff = (abs(curStep) - abs(curReading / 12));
+      diff = (abs(curStep) - abs(curReading / 5));
       Serial.println("Arch Elevator Encoder = " + String(curReading) + ":  Steps = " + curStep  + ":  Diff = " + diff);
-      if (diff > 3 || diff < -10)
+      if (diff > 20 || diff < -20)
         smallSkipped = true;
     }
   }

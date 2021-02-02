@@ -30,7 +30,7 @@ void homeLIN() {
     LIN.setCurrentPosition(1650); // reset step count to 0
     encoderLIN.clearCount();
 
-    Serial.println("Linear Actuator -- Moving 100 Steps");
+    Serial.println("Linear Actuator -- Moving to 1600 steps");
     LIN.runToNewPosition(1600);
     //digitalWrite(LIN_ENA, LOW); // disable linear actuator
   }

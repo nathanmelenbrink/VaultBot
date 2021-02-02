@@ -8,7 +8,7 @@
 BluetoothSerial SerialBT;
 
 // REPLACE WITH THE MAC Address of the board you want to send to
-uint8_t broadcastAddress[] =  {0x24, 0x62, 0xAB, 0xB0, 0x34, 0xA8};    // Arch board
+uint8_t broadcastAddress[] =  {0x24, 0x62, 0xAB, 0xCD, 0xA8, 0x50};    // Arch board
 // uint8_t broadcastAddress[] =  {0x24, 0x62, 0xAB, 0xD1, 0xB5, 0x94};  // Robot board
 
 // Variables for ESPNOW
@@ -45,8 +45,8 @@ int curRow = 2;   //2
 int curCol = 0;   //0
 //int archMessage = 0;
 int archVal = 0; 
-float interval = 612.4;
-int offset = 38; 
+float interval = 3061; // 612.4;
+int offset = 180; // 38; 
 String readString;
 
 AccelStepper LIN(AccelStepper::DRIVER, LIN_STP, LIN_DIR);

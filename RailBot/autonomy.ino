@@ -71,7 +71,7 @@ void pickAndPlace(int row, int col) {
     // wait for reply
     m = millis();
     while (incomingByte != 101) {
-      if (millis() - m > 15000) {
+      if (millis() - m > 20000) {
         //SerialBT.println(incomingByte);
         SerialBT.println("breaking, waiting to hear ACK to row 2");
         incomingByte = 0;
@@ -95,7 +95,7 @@ void pickAndPlace(int row, int col) {
   delay(1000);
   // wait for reply
   while (incomingByte != 101) {
-    if (millis() - m > 15000) {
+    if (millis() - m > 20000) {
       //SerialBT.println(incomingByte);
       SerialBT.println("breaking, waiting for ACK to Row 1");
       break;
@@ -128,7 +128,7 @@ void pickAndPlace(int row, int col) {
   m = millis();
   // wait for reply
   while (incomingByte != 101) {
-    if (millis() - m > 15000) {
+    if (millis() - m > 20000) {
       SerialBT.println("breaking");
       break;
     }
@@ -142,16 +142,16 @@ void pickAndPlace(int row, int col) {
   }
   // wait a few seconds to check alignment
   if (row == 11) {
-    delay(10000);
+    //delay(10000);
   }
   
   // locomotes col blocks out
-  locomote((-500 * col)-30);
+  locomote((-500 * col)-10);
 
 
   // places block
   digitalWrite(LIN_ENA, HIGH);
-  LIN.runToNewPosition(10);
+  LIN.runToNewPosition(4);
 
   // adjusts block
   digitalWrite(LOC_ENA, HIGH);
@@ -170,14 +170,15 @@ void pickAndPlace(int row, int col) {
   LIN.runToNewPosition(1600);
 
   // return to Arch
+  locomote(0);
   digitalWrite(LOC_ENA, HIGH);
-  LOC.runToNewPosition(100);
+  LOC.runToNewPosition(50);
   LOC.setCurrentPosition(0);
   digitalWrite(LOC_ENA, LOW);
 
   // wait a few seconds to check alignment
   if (row == 11) {
-    delay(10000);
+    delay(3000);
   }
   
   incomingByte = 0;

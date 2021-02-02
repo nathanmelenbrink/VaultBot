@@ -45,7 +45,7 @@ void serialEvent() {
       linearActive = false;
       archActive = false;
       digitalWrite(LOC_ENA, HIGH);
-      digitalWrite(LIN_ENA, LOW);
+      //digitalWrite(LIN_ENA, LOW);
     }
 
     if (readString == "G" || readString == "g") {
@@ -74,14 +74,25 @@ void serialEvent() {
     }
 
     if (readString == "H" || readString == "h") {
-      SerialBT.println("homing");
+      SerialBT.println("homing loc");
       homeLOC();
+      //homeLIN();
+    }
+
+    if (readString == "J" || readString == "j") {
+      SerialBT.println("homing lin");
+      //homeLOC();
       homeLIN();
     }
     
     if (readString == "Y" || readString == "y") {
       SerialBT.println("Beginning AutoRun");
       autoRun();
+    }
+
+    if (readString == "I" || readString == "i") {
+      SerialBT.println("Beginning Repair");
+      repair();
     }
 
     if (isValidNumber(readString)) {
